@@ -48,7 +48,7 @@ export default function Navbar() {
           <img 
             src="/logo.png" 
             alt="Finitiv Logo" 
-            className="h-16 object-contain invert" /* FIX: Am adaugat invert */
+            className="h-16 object-contain filter-white" /* NOU: Inversat in ALB (vizibil pe negru) */
           />
         </Link>
 

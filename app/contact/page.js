@@ -59,15 +59,17 @@ export default function Contact() {
           <div className="space-y-6 font-sans">
             <div className="flex items-center gap-4 text-gray-300">
               <Mail className="w-5 h-5" />
-              <span>contact@finitiv.ro</span>
+              {/* <span>contact@finitiv.ro</span> */}
+              <span>finitiv.ro@gmail.com</span>
+              
             </div>
             <div className="flex items-center gap-4 text-gray-300">
               <Phone className="w-5 h-5" />
-              <span>+40 700 123 456</span>
+              <span>+40 755 351 338</span>
             </div>
             <div className="flex items-center gap-4 text-gray-300">
               <MapPin className="w-5 h-5" />
-              <span>Bucharest / Cluj / Craiova</span>
+              <span>Based in Romania / Available Worldwide</span>
             </div>
           </div>
         </motion.div>

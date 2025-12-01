@@ -25,3 +25,14 @@ a {
     text-wrap: balance;
   }
 }
+
+/* Adauga asta la finalul fisierului app/globals.css */
+/* Clasa pentru a face un element NEGRU sa devina ALB */
+.filter-white {
+  filter: brightness(0) invert(1);
+}
+
+/* Clasa pentru a reseta la NEGRU (pe fundal alb) */
+.filter-black {
+  filter: none;
+}

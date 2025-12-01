@@ -12,7 +12,8 @@ export default function Home() {
         {/* Imagine de fundal cu overlay intunecat */}
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2070&auto=format&fit=crop" 
+            //src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2070&auto=format&fit=crop" 
+            src="/photos/home.jpg"
             alt="Hero Background" 
             className="w-full h-full object-cover opacity-60"
           />

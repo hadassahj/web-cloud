@@ -38,7 +38,7 @@ export default function Footer() {
 
         {/* SOCIAL MEDIA ICONS (Dreapta) */}
         <div className="flex gap-6 md:gap-8 justify-center md:justify-end md:w-1/4">
-          <a href="URL-INSTAGRAM" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-400 transition-colors">
+          <a href="https://www.instagram.com/finitiv.ro/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-400 transition-colors">
             <Instagram size={28} /> {/* Am marit iconitele */}
           </a>
           <a href="URL-FACEBOOK" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-400 transition-colors">

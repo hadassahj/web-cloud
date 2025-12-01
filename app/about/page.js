@@ -2,6 +2,26 @@
 import { motion } from 'framer-motion'
 
 export default function About() {
+  const teamMembers = [
+    {
+      name: "Hadasa Finichiu",
+      role: "Lead Photographer & Visionary",
+      bio: "Obsessed with natural light and raw emotions, Hadasa drives the creative direction behind Finitiv's signature cinematic style.",
+      // Folosim calea relativă corectă: /photos/ADA00641.jpg
+      image: "/photos/ADA00641.jpg" 
+    },
+    {
+      name: "Adelin Finichiu",
+      role: "Lead Videographer & Editor",
+      bio: "Adelin ensures every film tells a cohesive story, focusing on seamless transitions, immersive audio, and timeless editing techniques.",
+      // URL de placeholder corectat (nu avea cratimă)
+      image: "/photos/SHM_8131.jpg" 
+    }
+  ];
+
+  // Am inversat logica Alb-Negru la Hover, ca să fie Color implicit
+  const imageHoverClass = "w-full h-full object-cover hover:grayscale transition duration-700"; 
+
   return (
     <main className="min-h-screen bg-black text-white pt-32 pb-20 px-6">
       
@@ -32,18 +52,16 @@ export default function About() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative h-[600px] w-full"
         >
-          {/* Imagine artistica despre echipa */}
           <img 
-            src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1780&auto=format&fit=crop" 
+            src="/photos/about.jpg" 
             alt="The Team" 
             className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 rounded-sm"
           />
-          {/* Chenar decorativ */}
           <div className="absolute top-4 -right-4 w-full h-full border border-white/20 -z-10 hidden md:block"></div>
         </motion.div>
       </section>
 
-      {/* Stats / Philosophy */}
+      {/* Stats / Philosophy Section */}
       <section className="border-y border-white/10 py-16 mb-20">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           {[
@@ -59,6 +77,44 @@ export default function About() {
         </div>
       </section>
 
+      {/* Secțiunea Echipa (Team) */}
+      <section className="py-20 max-w-7xl mx-auto">
+        <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center font-serif text-4xl mb-16"
+        >
+            Meet the Visual Storytellers
+        </motion.h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+          {teamMembers.map((member, index) => (
+            <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: index * 0.2 }}
+                viewport={{ once: true }}
+                className="flex flex-col items-center text-center"
+            >
+                {/* Poza - Color implicit, B/W la hover */}
+                <div className="relative w-full max-w-sm h-96 overflow-hidden rounded-md mb-6">
+                    <img 
+                        src={member.image} 
+                        alt={member.name} 
+                        className={imageHoverClass} // Folosim clasa corectă pentru hover
+                    />
+                </div>
+
+                {/* Nume & Descriere */}
+                <h3 className="font-serif text-3xl mb-1 text-white">{member.name}</h3>
+                <p className="text-sm uppercase tracking-widest text-gray-500 mb-4">{member.role}</p>
+                <p className="font-sans text-gray-400 max-w-xs">{member.bio}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
     </main>
   )
 }

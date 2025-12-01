@@ -46,9 +46,15 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <Link href="/photography" className="bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-200 transition duration-300">
-              View Portfolio
+            {/* Butonul care trebuie să fie Alb pe NEGRU */}
+            <Link 
+              href="/photography" 
+              className="bg-white px-8 py-3 rounded-full font-semibold hover:bg-gray-200 transition duration-300"
+            >
+              <span className="text-black">View Portfolio</span> {/* <--- AICI E SCHIMBAREA */}
             </Link>
+            
+            {/* Butonul secundar (Border Alb) */}
             <Link href="/contact" className="border border-white/30 backdrop-blur-sm text-white px-8 py-3 rounded-full font-semibold hover:bg-white/10 transition duration-300">
               Get in Touch
             </Link>

@@ -80,5 +80,4 @@ Open an issue or reach out to the repo owners for further help.
 ## 🚀 Live Demo
 
 The project is currently deployed and available here:
-
-[finitiv.vercel.app]
+https://finitiv.vercel.app/

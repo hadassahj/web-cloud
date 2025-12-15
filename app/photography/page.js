@@ -23,6 +23,7 @@ export default function Photography() {
     }
     fetchPhotos()
   }, [])
+// ... (restul codului, inclusiv fetch-ul Supabase)
 
   return (
     <main className="min-h-screen bg-black text-white pt-32 px-4 pb-20">
@@ -35,18 +36,13 @@ export default function Photography() {
         </p>
       </div>
 
-      {/* Loading State (cat timp se incarca datele) */}
-      {loading && (
-        <div className="text-center text-gray-500 py-20 font-sans animate-pulse">
-          Loading from database...
-        </div>
-      )}
+      {/* ... (Loading State) ... */}
 
       {/* MASONRY GALLERY */}
       {!loading && (
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 max-w-7xl mx-auto">
           {photos.map((project, index) => (
-            <Link href={`/photography/${project.id}`} key={project.id}> {/* <--- AICI E FIX-UL! */}
+            <Link href={`/photography/${project.id}`} key={project.id}> 
               <motion.div
                 key={project.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -61,10 +57,10 @@ export default function Photography() {
                   className="w-full h-auto object-cover transform group-hover:scale-105 transition duration-700 ease-in-out"
                 />
                 
-                {/* Overlay la hover */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
-                  <h3 className="font-serif text-xl text-white translate-y-4 group-hover:translate-y-0 transition duration-500 delay-75">{project.title}</h3>
-                  <span className="font-sans text-xs tracking-widest text-gray-300 uppercase mt-2 translate-y-4 group-hover:translate-y-0 transition duration-500 delay-100">
+                {/* Overlay cu ajustările pentru Mobile/Link */}
+                <div className="absolute inset-0 bg-black/60 opacity-100 sm:opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col justify-end p-6">
+                  <h3 className="font-serif text-xl text-white translate-y-0 sm:translate-y-4 group-hover:translate-y-0 transition duration-500 delay-75">{project.title}</h3>
+                  <span className="font-sans text-xs tracking-widest text-gray-300 uppercase mt-2 translate-y-0 sm:translate-y-4 group-hover:translate-y-0 transition duration-500 delay-100">
                     {project.category}
                   </span>
                 </div>
@@ -74,7 +70,6 @@ export default function Photography() {
         </div>
       )}
 
-      {/* Sectiunea LIGHTBOX/AnimatePresence a fost stearsa complet de aici! */}
     </main>
   )
 }

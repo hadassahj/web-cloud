@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Finitiv
 
-## Getting Started
+A portfolio website for photography and videography built with Next.js (app directory), Tailwind CSS and Supabase — deployed on Vercel.
 
-First, run the development server:
+## Features
+- Photo gallery
+- Video gallery
+- Minimal responsive UI (Navbar, Footer, cards)
+- Supabase integration for any dynamic data
+
+## Tech Stack
+- Next.js (App Router)
+- Tailwind CSS
+- Supabase (client in app/lib/supabase.js)
+- Deployed on Vercel
+
+## Project Structure (high level)
+- app/ — Next.js app routes and components
+  - components/ — Navbar, Footer, PhotoCard, VideoCard
+  - photography/ — photography listing and [id] pages
+  - videography/ — videography pages
+- public/photos/ — static photo assets
+- app/lib/supabase.js — Supabase client
+
+## Local Setup
+Prerequisites: Node.js 18+ and npm (or pnpm/yarn).
+
+1. Install dependencies
+
+```bash
+npm install
+```
+
+2. Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Build for production
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
+Create a `.env.local` (or configure in Vercel) with the following values if using Supabase:
 
-## Learn More
+- NEXT_PUBLIC_SUPABASE_URL — your Supabase project URL
+- NEXT_PUBLIC_SUPABASE_ANON_KEY — your Supabase anon/public key
 
-To learn more about Next.js, take a look at the following resources:
+The app expects the Supabase client in app/lib/supabase.js to read from the public NEXT_PUBLIC_ keys. Keep any service_role keys secret and never commit them.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment (Vercel)
+1. Push the repository to GitHub (or connect your Git provider).
+2. Import the project in Vercel and set the Environment Variables listed above.
+3. Set the build command to `npm run build` (Vercel usually detects this automatically) and the framework preset to Next.js.
+4. Deploy — Vercel will handle the build and publish the site.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Where to look in this repo
+- Homepage: app/page.js
+- Photography listing: app/photography/page.js
+- Photography detail: app/photography/[id]/page.js
+- Videography: app/videography/page.js
+- Components: app/components/
 
-## Deploy on Vercel
+## Contributors & Assigned (Completed) Tasks
+- Hadassah Finichiu — Project setup, layout, `Navbar`/`Footer`, photography pages, Vercel deployment. ✓
+- Adelin Finichiu — PhotoCard & VideoCard components, videography pages, Supabase client integration. ✓
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Troubleshooting
+- If images don’t show, confirm files exist under public/photos/ and paths in components match.
+- If Supabase calls fail, verify the NEXT_PUBLIC_SUPABASE_* variables in local env or Vercel.
+
+## Contact
+Open an issue or reach out to the repo owners for further help.
+
+## 🚀 Live Demo
+
+The project is currently deployed and available here:
+
+[www.finitiv.vercel.app]

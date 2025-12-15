@@ -1,26 +1,57 @@
 # Finitiv
 
-A portfolio website for photography and videography built with Next.js (app directory), Tailwind CSS and Supabase — deployed on Vercel.
+A **production-ready photography and videography portfolio platform** built with **Next.js (App Router)**, **Tailwind CSS**, and **Supabase**, and deployed on **Vercel**.  
+Finitiv is engineered with a strong focus on **scalability, maintainability, and performance**, going well beyond a simple static gallery.
+
+---
+
+## Overview
+
+Finitiv is designed as a **modern web application**, not just a visual showcase.  
+It leverages the **Next.js App Directory architecture**, modular component design, and a cloud-based backend to provide a clean, extensible foundation suitable for real-world usage and future growth.
+
+The project follows a clear separation of concerns between **routing**, **UI components**, and **data access**, ensuring long-term maintainability.
+
+---
 
 ## Features
-- Photo gallery
-- Video gallery
-- Minimal responsive UI (Navbar, Footer, cards)
-- Supabase integration for any dynamic data
+
+- Photography and videography sections with dedicated routes
+- Dynamic detail pages implemented via parameterized routes (`[id]`)
+- Reusable, composable UI components (Navbar, Footer, PhotoCard, VideoCard)
+- Fully responsive, minimalist interface built with Tailwind CSS
+- Supabase integration for dynamic data and backend services
+- Optimized asset handling using Next.js conventions
+- Production-grade deployment and CI/CD via Vercel
+
+---
 
 ## Tech Stack
-- Next.js (App Router)
-- Tailwind CSS
-- Supabase (client in app/lib/supabase.js)
-- Deployed on Vercel
 
-## Project Structure (high level)
-- app/ — Next.js app routes and components
-  - components/ — Navbar, Footer, PhotoCard, VideoCard
-  - photography/ — photography listing and [id] pages
-  - videography/ — videography pages
-- public/photos/ — static photo assets
-- app/lib/supabase.js — Supabase client
+- **Next.js** — App Router, layouts, and modern routing patterns
+- **Tailwind CSS** — utility-first styling and responsive design
+- **Supabase** — backend services and data access layer
+- **Vercel** — hosting, CI/CD, and optimized production builds
+
+---
+
+## Project Structure (High-Level)
+
+app/
+├── components/          # Shared UI components
+│   ├── Navbar.jsx
+│   ├── Footer.jsx
+│   ├── PhotoCard.jsx
+│   └── VideoCard.jsx
+├── photography/         # Photography listing and detail pages
+│   └── [id]/            # Dynamic photo pages
+├── videography/         # Videography pages
+├── lib/
+│   └── supabase.js      # Supabase client configuration
+├── page.js              # Homepage
+public/
+└── photos/              # Static photo assets
+
 
 ## Local Setup
 Prerequisites: Node.js 18+ and npm (or pnpm/yarn).

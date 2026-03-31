@@ -1,8 +1,10 @@
 'use client'
-import { motion } from 'framer-motion'
 import { Mail, MapPin, Phone } from 'lucide-react'
-import { useState } from 'react' // NOU: Pentru a gestiona formularul
-import { supabase } from '../lib/supabase' // NOU: Pentru a salva mesajul
+import { useState } from 'react'
+// Noile importuri pentru Firebase:
+import { collection, addDoc } from 'firebase/firestore'
+import { db } from '../lib/firebase'
+import { motion } from 'framer-motion'
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
@@ -14,30 +16,21 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setStatus('sending')
     
-    // Verificare simpla
-    if (!formData.name || !formData.email || !formData.message) {
-      setStatus('error')
-      return
-    }
+    try {
+      // Adăugăm mesajul într-o colecție nouă numită "messages"
+      await addDoc(collection(db, 'messages'), {
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        createdAt: new Date()
+      })
 
-    const { error } = await supabase
-      .from('messages') // Numele tabelului nostru
-      .insert([
-        { 
-          name: formData.name, 
-          email: formData.email, 
-          message: formData.message 
-        },
-      ])
-
-    if (error) {
-      console.error('Error saving message:', error)
-      setStatus('error')
-    } else {
-      setStatus('success')
-      setFormData({ name: '', email: '', message: '' }) // Resetam formularul
+      alert('Mesajul a fost trimis cu succes!')
+      setFormData({ name: '', email: '', message: '' }) // curățăm formularul
+    } catch (error) {
+      console.error('Eroare la trimiterea mesajului:', error)
+      alert('A apărut o eroare. Te rugăm să încerci din nou.')
     }
   }
 

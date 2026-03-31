@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.86.0",
+    "firebase": "^12.11.0",
     "@vercel/analytics": "^1.6.1",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.555.0",

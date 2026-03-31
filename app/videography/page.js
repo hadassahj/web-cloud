@@ -1,7 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react' // Importam useState si useEffect
+import { useState, useEffect } from 'react' 
 import { motion } from 'framer-motion'
-import { supabase } from '../lib/supabase' // NOU: Conexiunea la DB!
+
+// 1. Noile importuri pentru Firebase
+import { collection, getDocs, query, where } from 'firebase/firestore'
+import { db } from '../lib/firebase' 
 
 export default function Videography() {
   const [videos, setVideos] = useState([])
@@ -9,17 +12,22 @@ export default function Videography() {
 
   useEffect(() => {
     async function fetchVideos() {
-      // CEREM DOAR PROIECTELE DE TIP 'video' DIN TABELUL 'projects'
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('type', 'video') // <--- FILTRUL MAGIC
-        .order('id', { ascending: false })
+      try {
+        // 2. Cerem DOAR documentele de tip 'video' din colecția 'media'
+        const q = query(collection(db, 'media'), where('type', '==', 'video'))
+        const querySnapshot = await getDocs(q)
+        
+        const data = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
 
-      if (error) console.error('Eroare la incarcarea video:', error)
-      else setVideos(data)
-      
-      setLoading(false)
+        setVideos(data)
+      } catch (error) {
+        console.error('Eroare la incarcarea video:', error)
+      } finally {
+        setLoading(false)
+      }
     }
     fetchVideos()
   }, [])
@@ -52,7 +60,7 @@ export default function Videography() {
             {/* Player Video */}
             <div className="relative w-full aspect-video bg-gray-900 rounded-sm overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.05)]">
               <iframe 
-                src={video.image_url} // Aici trage link-ul din DB
+                src={video.url} // <--- 3. Aici am modificat din image_url în url
                 title={video.title} 
                 className="absolute top-0 left-0 w-full h-full" 
                 frameBorder="0" 
@@ -63,7 +71,7 @@ export default function Videography() {
           </motion.div>
         ))}
         {videos.length === 0 && !loading && (
-             <div className="text-center text-gray-500 py-10">Nu sunt clipuri video adăugate în baza de date.</div>
+            <div className="text-center text-gray-500 py-10">Nu sunt clipuri video adăugate în baza de date.</div>
         )}
       </div>
     </main>

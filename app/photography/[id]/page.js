@@ -1,9 +1,11 @@
 'use client'
 import { useState, useEffect, use } from 'react'
-import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
-import Image from 'next/image' // <--- Aici e noutatea
 import { ArrowLeft } from 'lucide-react'
+
+// 1. Importurile Firebase
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore'
+import { db } from '../../lib/firebase'
 
 export default function ProjectGallery({ params }) {
   const unwrappedParams = use(params);
@@ -15,22 +17,32 @@ export default function ProjectGallery({ params }) {
 
   useEffect(() => {
     async function fetchData() {
-      // 1. Luam detaliile albumului
-      const { data: projectData } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('id', projectId)
-        .single()
-      setProject(projectData)
+      try {
+        // Pas 1: Luam detaliile proiectului din colecția "media"
+        const docRef = doc(db, 'media', projectId)
+        const docSnap = await getDoc(docRef)
+        
+        if (docSnap.exists()) {
+          setProject({ id: docSnap.id, ...docSnap.data() })
+        }
 
-      // 2. Luam pozele din galerie
-      const { data: imagesData } = await supabase
-        .from('gallery_images')
-        .select('*')
-        .eq('project_id', projectId)
-      setGalleryImages(imagesData || [])
-      setLoading(false)
+        // Pas 2: Luam pozele din galerie din colecția "gallery_images"
+        const q = query(collection(db, 'gallery_images'), where('project_id', '==', projectId))
+        const querySnapshot = await getDocs(q)
+        
+        const imagesData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        
+        setGalleryImages(imagesData)
+      } catch (error) {
+        console.error("Eroare la extragerea datelor:", error)
+      } finally {
+        setLoading(false)
+      }
     }
+    
     if (projectId) fetchData()
   }, [projectId])
 
@@ -50,29 +62,24 @@ export default function ProjectGallery({ params }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto">
         
-        {/* COPERTA (Optimizata) */}
-        {project?.image_url && (
+        {/* COPERTA */}
+        {project?.url && (
           <div className="relative w-full h-[500px]">
-            <Image 
-              src={project.image_url} 
+            <img 
+              src={project.url} 
               alt="Cover"
-              fill 
-              className="rounded-sm object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority 
+              className="rounded-sm object-cover w-full h-full"
             />
           </div>
         )}
 
-        {/* GALERIA (Optimizata) */}
+        {/* GALERIA */}
         {galleryImages.map((img) => (
           <div key={img.id} className="relative w-full h-[500px]">
-             <Image 
-              src={img.image_url} 
+             <img 
+              src={img.url} 
               alt="Gallery item" 
-              fill
-              className="rounded-sm object-cover hover:opacity-90 transition"
-              sizes="(max-width: 768px) 100vw, 50vw"
+              className="rounded-sm object-cover w-full h-full hover:opacity-90 transition"
             />
           </div>
         ))}

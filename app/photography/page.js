@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 
-// 1. Noile importuri pentru Firebase
-import { collection, getDocs, query, where } from 'firebase/firestore'
-import { db } from '../lib/firebase' // asigură-te că drumul e corect
+// 1. Am adăugat 'orderBy' în import
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore'
+import { db } from '../lib/firebase' 
 
 export default function Photography() {
   const [photos, setPhotos] = useState([]) 
@@ -14,8 +14,12 @@ export default function Photography() {
   useEffect(() => {
     async function fetchPhotos() {
       try {
-        // 2. Extragem datele din colecția "media"
-        const q = query(collection(db, 'media'), where('type', '==', 'photo'))
+        // 2. MAGIA ORDONĂRII: Am adăugat orderBy('order', 'asc')
+        const q = query(
+          collection(db, 'media'), 
+          where('type', '==', 'photo'),
+          orderBy('order', 'asc')
+        )
         const querySnapshot = await getDocs(q)
         
         const data = querySnapshot.docs.map(doc => ({
@@ -44,9 +48,9 @@ export default function Photography() {
         </p>
       </div>
 
-      {/* MASONRY GALLERY */}
+      {/* 3. GRID GALLERY: Am schimbat 'columns' cu 'grid' pentru a le pune una lângă alta */}
       {!loading && (
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {photos.map((project, index) => (
             <Link href={`/photography/${project.id}`} key={project.id}> 
               <motion.div
@@ -54,13 +58,13 @@ export default function Photography() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="break-inside-avoid relative group cursor-pointer overflow-hidden rounded-sm"
+                // Am adăugat aspect-[4/5] ca toate coperțile să aibă exact aceeași dimensiune elegantă
+                className="relative group cursor-pointer overflow-hidden rounded-sm aspect-[4/5]"
               >
-                {/* 3. Am actualizat sursa imaginii la project.url */}
                 <img 
                   src={project.url} 
                   alt={project.title} 
-                  className="w-full h-auto object-cover transform group-hover:scale-105 transition duration-700 ease-in-out"
+                  className="w-full h-full object-cover transform group-hover:scale-105 transition duration-700 ease-in-out"
                 />
                 
                 <div className="absolute inset-0 bg-black/60 opacity-100 sm:opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col justify-end p-6">

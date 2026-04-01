@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer' // <-- NOU: Import Footer
 import { Analytics } from '@vercel/analytics/next'
 import { Inter, Playfair_Display } from 'next/font/google'
+import ScrollToTop from './components/ScrollToTop'
 
 // Configurare fonturi... (Linii neschimbate)
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
         <Navbar />
         {children}
         <Footer /> {/* <-- NOU: Aici apare pe toate paginile */}
+        <ScrollToTop /> {/* <-- NOU: Aici apare pe toate paginile */}
         <Analytics />
       </body>
     </html>

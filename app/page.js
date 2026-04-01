@@ -15,6 +15,8 @@ export default function Home() {
             //src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2070&auto=format&fit=crop" 
             src="/photos/home.jpg"
             alt="Hero Background" 
+            priority="true" 
+            quality={90}
             className="w-full h-full object-cover opacity-60"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30" />

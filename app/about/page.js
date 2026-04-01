@@ -1,26 +1,34 @@
 'use client'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+import { db } from '../lib/firebase'
 
 export default function About() {
-  const teamMembers = [
-    {
-      name: "Hadasa Finichiu",
-      role: "Lead Photographer & Visionary",
-      bio: "Obsessed with natural light and raw emotions, Hadasa drives the creative direction behind Finitiv's signature cinematic style.",
-      // Folosim calea relativă corectă: /photos/ADA00641.jpg
-      image: "/photos/ADA00641.jpg" 
-    },
-    {
-      name: "Adelin Finichiu",
-      role: "Lead Videographer & Editor",
-      bio: "Adelin ensures every film tells a cohesive story, focusing on seamless transitions, immersive audio, and timeless editing techniques.",
-      // URL de placeholder corectat (nu avea cratimă)
-      image: "/photos/SHM_8131.jpg" 
-    }
-  ];
+  const [teamMembers, setTeamMembers] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  // Am inversat logica Alb-Negru la Hover, ca să fie Color implicit
-  const imageHoverClass = "w-full h-full object-cover hover:grayscale transition duration-700"; 
+  // 1. Încărcăm echipa din Firebase
+  useEffect(() => {
+    async function fetchTeam() {
+      try {
+        const q = query(collection(db, 'team'), orderBy('order', 'asc'))
+        const querySnapshot = await getDocs(q)
+        const data = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        setTeamMembers(data)
+      } catch (error) {
+        console.error('Eroare la încărcarea echipei:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTeam()
+  }, [])
+
+  const imageHoverClass = "w-full h-full object-cover hover:grayscale transition duration-700 opacity-0"; 
 
   return (
     <main className="min-h-screen bg-black text-white pt-32 pb-20 px-6">
@@ -40,10 +48,6 @@ export default function About() {
             Finitiv started with a simple idea: that photography shouldn't just document an event, it should interpret it. 
             We are visual narrators obsessed with light, composition, and raw emotion.
           </p>
-          <p className="font-sans text-gray-400 text-lg leading-relaxed">
-            Whether it's the chaotic joy of a wedding or the structured elegance of a fashion shoot, 
-            we bring a cinematic perspective to every frame.
-          </p>
         </motion.div>
 
         <motion.div 
@@ -52,21 +56,23 @@ export default function About() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative h-[600px] w-full"
         >
+          {/* Imaginea principală de About - o lăsăm hardcodată pentru viteză maximă (LCP) */}
           <img 
             src="/photos/about.jpg" 
             alt="The Team" 
+            loading="eager"
             className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700 rounded-sm"
           />
           <div className="absolute top-4 -right-4 w-full h-full border border-white/20 -z-10 hidden md:block"></div>
         </motion.div>
       </section>
 
-      {/* Stats / Philosophy Section */}
+      {/* Stats Section */}
       <section className="border-y border-white/10 py-16 mb-20">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           {[
             { label: "Years Experience", value: "05+" },
-            { label: "Projects Completed", value: "120+" },
+            { label: "Projects Completed", value: "30+" },
             { label: "Happy Clients", value: "100%" }
           ].map((stat, i) => (
             <div key={i}>
@@ -77,7 +83,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* Secțiunea Echipa (Team) */}
+      {/* Secțiunea Echipa (Team) - Dinamică din Firebase */}
       <section className="py-20 max-w-7xl mx-auto">
         <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -89,25 +95,25 @@ export default function About() {
         </motion.h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-          {teamMembers.map((member, index) => (
+          {!loading && teamMembers.map((member, index) => (
             <motion.div
-                key={index}
+                key={member.id}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: index * 0.2 }}
                 viewport={{ once: true }}
                 className="flex flex-col items-center text-center"
             >
-                {/* Poza - Color implicit, B/W la hover */}
-                <div className="relative w-full max-w-sm h-96 overflow-hidden rounded-md mb-6">
+                <div className="relative w-full max-w-sm h-96 overflow-hidden rounded-md mb-6 bg-neutral-900">
                     <img 
                         src={member.image} 
                         alt={member.name} 
-                        className={imageHoverClass} // Folosim clasa corectă pentru hover
+                        loading="lazy"
+                        className={imageHoverClass}
+                        onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
                     />
                 </div>
 
-                {/* Nume & Descriere */}
                 <h3 className="font-serif text-3xl mb-1 text-white">{member.name}</h3>
                 <p className="text-sm uppercase tracking-widest text-gray-500 mb-4">{member.role}</p>
                 <p className="font-sans text-gray-400 max-w-xs">{member.bio}</p>

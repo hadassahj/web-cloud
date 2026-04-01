@@ -6,7 +6,6 @@ import { doc, getDoc } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 
 export default function ProjectGallery({ params }) {
-  // Despachetăm parametrii (standard Next.js nou)
   const unwrappedParams = use(params);
   const projectId = unwrappedParams.id;
 
@@ -14,13 +13,11 @@ export default function ProjectGallery({ params }) {
   const [galleryImages, setGalleryImages] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // Ne luăm Cloud Name-ul din variabilele de mediu
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 
   useEffect(() => {
     async function fetchData() {
       try {
-        // 1. Aducem datele proiectului din Firebase
         const docRef = doc(db, 'media', projectId)
         const docSnap = await getDoc(docRef)
         
@@ -28,20 +25,35 @@ export default function ProjectGallery({ params }) {
           const projectData = { id: docSnap.id, ...docSnap.data() }
           setProject(projectData)
 
-          // 2. Magia cu Tag-ul: dacă avem tag, cerem pozele de la Cloudinary
+          // Extragem pozele din Cloudinary (Varianta Tag)
           if (projectData.cloudinary_tag && cloudName) {
             const res = await fetch(`https://res.cloudinary.com/${cloudName}/image/list/${projectData.cloudinary_tag}.json`)
             
             if (res.ok) {
               const data = await res.json()
-              // Construim link-urile optimizate automat pentru fiecare poză găsită
-              const images = data.resources.map(img => 
-                `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,q_auto/v${img.version}/${img.public_id}.${img.format}`
-              )
+              
+              // Sortăm cronologic
+              const sortedResources = data.resources.sort((a, b) => a.version - b.version)
+
+              // AICI E SECRETUL: Salvăm URL-ul, dar calculăm și "greutatea" vizuală a pozei (înălțime / lățime)
+              const images = sortedResources.map(img => ({
+                url: `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,q_auto/v${img.version}/${img.public_id}.${img.format}`,
+                relHeight: img.height / img.width // Ex: o poză verticală va avea o valoare mai mare decât una orizontală
+              }))
               setGalleryImages(images)
             } else {
+
               console.warn("Cloudinary nu a returnat lista de poze. Verifică setarea 'Resource List' din Security.")
+
             }
+          } 
+          // Fallback dacă folosești varianta manuală cu Array în Firebase
+          else if (projectData.images) {
+            const images = projectData.images.map(url => ({
+              url: url,
+              relHeight: 1 // La array manual nu știm dimensiunile, deci le dăm o valoare fixă
+            }))
+            setGalleryImages(images)
           }
         }
       } catch (error) {
@@ -53,6 +65,25 @@ export default function ProjectGallery({ params }) {
     
     if (projectId) fetchData()
   }, [projectId, cloudName])
+
+  // --- ALGORITMUL DE ECHILIBRARE A COLOANELOR ---
+  const leftColumn = [];
+  const rightColumn = [];
+  let leftHeight = 0;
+  let rightHeight = 0;
+
+  // Împărțim pozele inteligent
+  galleryImages.forEach((img) => {
+    // Dacă stânga e mai scurtă (sau egală), punem poza în stânga
+    if (leftHeight <= rightHeight) {
+      leftColumn.push(img.url);
+      leftHeight += img.relHeight;
+    } else {
+      // Altfel, o punem în dreapta
+      rightColumn.push(img.url);
+      rightHeight += img.relHeight;
+    }
+  });
 
   if (loading) return <div className="min-h-screen bg-black text-white flex items-center justify-center">Se încarcă...</div>
 
@@ -67,28 +98,57 @@ export default function ProjectGallery({ params }) {
         <p className="font-sans text-gray-400 text-lg uppercase tracking-widest mb-2">{project?.category}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto">
-        {/* Poza de copertă (URL-ul pus manual în Firebase) */}
+      <div className="max-w-7xl mx-auto space-y-4">
+        
+        {/* Poza de copertă */}
         {project?.url && (
-          <div className="relative w-full h-[500px]">
+          <div className="relative w-full mb-8">
             <img 
               src={project.url} 
               alt="Copertă"
-              className="rounded-sm object-cover w-full h-full"
+              className="rounded-sm w-full h-auto"
             />
           </div>
         )}
 
-        {/* Galeria (Pozele aduse automat din Cloudinary pe baza tag-ului) */}
-        {galleryImages.map((imageUrl, index) => (
-          <div key={index} className="relative w-full h-[500px]">
-             <img 
-              src={imageUrl} 
+        {/* --- Varianta MOBILE (1 coloană) --- */}
+        <div className="flex flex-col gap-4 md:hidden">
+          {galleryImages.map((img, index) => (
+            <img 
+              key={`mobile-${index}`}
+              src={img.url} 
               alt={`Galerie ${index}`} 
-              className="rounded-sm object-cover w-full h-full hover:opacity-90 transition"
+              className="rounded-sm w-full h-auto"
             />
+          ))}
+        </div>
+
+        {/* --- Varianta DESKTOP (2 coloane echilibrate) --- */}
+        <div className="hidden md:flex flex-row gap-4 items-start">
+          
+          <div className="flex flex-col gap-4 w-1/2">
+            {leftColumn.map((url, index) => (
+              <img 
+                key={`left-${index}`}
+                src={url} 
+                alt={`Stânga ${index}`} 
+                className="rounded-sm w-full h-auto hover:opacity-90 transition cursor-pointer"
+              />
+            ))}
           </div>
-        ))}
+
+          <div className="flex flex-col gap-4 w-1/2">
+            {rightColumn.map((url, index) => (
+              <img 
+                key={`right-${index}`}
+                src={url} 
+                alt={`Dreapta ${index}`} 
+                className="rounded-sm w-full h-auto hover:opacity-90 transition cursor-pointer"
+              />
+            ))}
+          </div>
+
+        </div>
       </div>
     </main>
   )

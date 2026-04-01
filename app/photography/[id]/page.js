@@ -2,12 +2,11 @@
 import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-
-// 1. Importurile Firebase
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 
 export default function ProjectGallery({ params }) {
+  // Despachetăm parametrii (standard Next.js nou)
   const unwrappedParams = use(params);
   const projectId = unwrappedParams.id;
 
@@ -15,27 +14,36 @@ export default function ProjectGallery({ params }) {
   const [galleryImages, setGalleryImages] = useState([])
   const [loading, setLoading] = useState(true)
 
+  // Ne luăm Cloud Name-ul din variabilele de mediu
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+
   useEffect(() => {
     async function fetchData() {
       try {
-        // Pas 1: Luam detaliile proiectului din colecția "media"
+        // 1. Aducem datele proiectului din Firebase
         const docRef = doc(db, 'media', projectId)
         const docSnap = await getDoc(docRef)
         
         if (docSnap.exists()) {
-          setProject({ id: docSnap.id, ...docSnap.data() })
-        }
+          const projectData = { id: docSnap.id, ...docSnap.data() }
+          setProject(projectData)
 
-        // Pas 2: Luam pozele din galerie din colecția "gallery_images"
-        const q = query(collection(db, 'gallery_images'), where('project_id', '==', projectId))
-        const querySnapshot = await getDocs(q)
-        
-        const imagesData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        
-        setGalleryImages(imagesData)
+          // 2. Magia cu Tag-ul: dacă avem tag, cerem pozele de la Cloudinary
+          if (projectData.cloudinary_tag && cloudName) {
+            const res = await fetch(`https://res.cloudinary.com/${cloudName}/image/list/${projectData.cloudinary_tag}.json`)
+            
+            if (res.ok) {
+              const data = await res.json()
+              // Construim link-urile optimizate automat pentru fiecare poză găsită
+              const images = data.resources.map(img => 
+                `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,q_auto/v${img.version}/${img.public_id}.${img.format}`
+              )
+              setGalleryImages(images)
+            } else {
+              console.warn("Cloudinary nu a returnat lista de poze. Verifică setarea 'Resource List' din Security.")
+            }
+          }
+        }
       } catch (error) {
         console.error("Eroare la extragerea datelor:", error)
       } finally {
@@ -44,15 +52,14 @@ export default function ProjectGallery({ params }) {
     }
     
     if (projectId) fetchData()
-  }, [projectId])
+  }, [projectId, cloudName])
 
-  if (loading) return <div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>
+  if (loading) return <div className="min-h-screen bg-black text-white flex items-center justify-center">Se încarcă...</div>
 
   return (
     <main className="min-h-screen bg-black text-white pt-24 px-4 pb-20">
-      
       <Link href="/photography" className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition">
-        <ArrowLeft className="mr-2 w-4 h-4" /> Back to Portfolio
+        <ArrowLeft className="mr-2 w-4 h-4" /> Înapoi la Portofoliu
       </Link>
 
       <div className="text-center mb-16 max-w-4xl mx-auto">
@@ -61,24 +68,23 @@ export default function ProjectGallery({ params }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto">
-        
-        {/* COPERTA */}
+        {/* Poza de copertă (URL-ul pus manual în Firebase) */}
         {project?.url && (
           <div className="relative w-full h-[500px]">
             <img 
               src={project.url} 
-              alt="Cover"
+              alt="Copertă"
               className="rounded-sm object-cover w-full h-full"
             />
           </div>
         )}
 
-        {/* GALERIA */}
-        {galleryImages.map((img) => (
-          <div key={img.id} className="relative w-full h-[500px]">
+        {/* Galeria (Pozele aduse automat din Cloudinary pe baza tag-ului) */}
+        {galleryImages.map((imageUrl, index) => (
+          <div key={index} className="relative w-full h-[500px]">
              <img 
-              src={img.url} 
-              alt="Gallery item" 
+              src={imageUrl} 
+              alt={`Galerie ${index}`} 
               className="rounded-sm object-cover w-full h-full hover:opacity-90 transition"
             />
           </div>

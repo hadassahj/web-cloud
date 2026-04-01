@@ -76,10 +76,22 @@ export default function Photography() {
                 className="h-full w-auto object-contain transform group-hover:scale-105 transition duration-700"
               />
               
-              {/* Overlay Text - acum se va mula exact pe lățimea pozei */}
-              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
-                <h3 className="font-serif text-3xl text-white">{project.title}</h3>
-                <p className="text-gray-300 uppercase tracking-widest text-xs mt-2">{project.category}</p>
+              {/* Overlay Text - Acum persistent și identic pe Mobil și Desktop */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-100 flex flex-col justify-end p-6 md:p-8 pointer-events-none transition-opacity duration-500">
+                
+                <h3 className="font-serif text-2xl md:text-3xl text-white drop-shadow-md">
+                  {project.title}
+                </h3>
+                
+                <p className="text-gray-300 uppercase tracking-widest text-[10px] md:text-xs mt-2 drop-shadow-md">
+                  {project.category}
+                </p>
+
+                {/* Text ajutător - Vizibil mereu, pe ambele dispozitive */}
+                <span className="text-white/70 uppercase tracking-[0.2em] text-[10px] md:text-[11px] mt-4 font-sans block">
+                  View Project &rarr;
+                </span>
+                
               </div>
             </motion.div>
           </Link>

@@ -17,7 +17,7 @@ const GalleryImage = ({ img, altText }) => (
       alt={altText} 
       loading="lazy"
       // Poza este invizibilă (opacity-0) până se descarcă toți pixelii
-      className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000 ease-in-out cursor-pointer hover:scale-[1.02]"
+      className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000 ease-in-out cursor-pointer "
       onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
     />
   </div>
@@ -116,21 +116,24 @@ export default function ProjectGallery({ params }) {
 
   // 2. GALERIA REALĂ
   return (
+    
     <main className="min-h-screen bg-black text-white pt-24 pb-20">
-      
-      {/* Butonul de înapoi - L-am scos din container ca să rămână aliniat la stânga */}
-      <div className="px-4 max-w-7xl mx-auto mb-8 relative z-40">
-        <Link href="/photography" className="inline-flex items-center text-gray-400 hover:text-white transition group">
-          <ArrowLeft className="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Înapoi la Portofoliu
-        </Link>
-      </div>
 
       {/* --- HEADER SECTION (Copertă Bleed + Titlu) --- */}
       <div className="w-full relative mb-16 md:mb-24">
+
+        {/* BUTONUL NOU: Minimalist, în engleză, plutitor peste imagine cu efect de sticlă (blur) */}
+        <div className="absolute top-24 md:top-8 left-4 md:left-8 z-20">
+          <Link href="/photography" className="inline-flex items-center text-white/70 hover:text-white transition group bg-black/30 backdrop-blur-md px-4 py-2 rounded-full text-xs uppercase tracking-widest border border-white/10">
+            <ArrowLeft className="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back
+          </Link>
+        </div>
+
+        {/* POZA DE COPERTĂ (care acum începe din marginea de sus a telefonului/monitorului) */}
         {project?.url && (
-          <div className="relative w-full h-[60vh] md:h-[80vh] bg-neutral-900 overflow-hidden flex items-center justify-center group">
+          <div className="relative w-full h-[70vh] md:h-[90vh] bg-black overflow-hidden flex items-center justify-center">
             
-            {/* Fundal blurat din culorile pozei */}
+             {/* Fundal blurat din culorile pozei */}
             <div 
               className="absolute inset-0 bg-cover bg-center opacity-30 blur-2xl scale-110"
               style={{ backgroundImage: `url(${project.url})` }}
@@ -140,20 +143,54 @@ export default function ProjectGallery({ params }) {
             <img 
               src={project.url} 
               alt={project?.title || "Copertă"}
-              className="relative z-10 w-auto h-full max-w-full object-contain shadow-2xl transition-transform duration-700 group-hover:scale-[1.02] opacity-0"
+              className="relative z-10 w-auto h-full max-w-full object-contain object-top shadow-2xl transition-transform duration-500 ease-in-out group-hover:scale-[1.02] opacity-0"
               onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
             />
 
+{/* OVERLAY SUS: Ultra-Smooth Scrim Gradient pentru a elimina banding-ul pe alb */}
+<div 
+  className="absolute top-0 left-0 w-full h-32 md:h-40 z-10 pointer-events-none"
+  style={{
+    backgroundImage: `linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.85) 5%,
+      rgba(0, 0, 0, 0.65) 10%,
+      rgba(0, 0, 0, 0.45) 15%,
+      rgba(0, 0, 0, 0.30) 20%,
+      rgba(0, 0, 0, 0.20) 25%,
+      rgba(0, 0, 0, 0.13) 30%,
+      rgba(0, 0, 0, 0.08) 35%,
+      rgba(0, 0, 0, 0.05) 40%,
+      rgba(0, 0, 0, 0.03) 45%,
+      rgba(0, 0, 0, 0.018) 50%,
+      rgba(0, 0, 0, 0.011) 55%,
+      rgba(0, 0, 0, 0.006) 60%,
+      rgba(0, 0, 0, 0.003) 65%,
+      rgba(0, 0, 0, 0.001) 70%,
+      rgba(0, 0, 0, 0.0005) 75%,
+      rgba(0, 0, 0, 0.0002) 80%,
+      rgba(0, 0, 0, 0.0001) 85%,
+      transparent 100%
+    )`
+  }}
+/>
+
+
+
+
+            {/* Gradient de jos în sus pentru ca titlul să fie mereu lizibil */}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none z-20" />
           </div>
+          
         )}
 
-        {/* Titlul urcă peste imagine */}
-        <div className="relative z-30 text-center max-w-4xl mx-auto -mt-20 md:-mt-32 px-4">
-          <h1 className="font-serif text-5xl md:text-8xl mb-4 tracking-tight drop-shadow-lg text-white">
+        {/* TITLUL (Urcă elegant peste imaginea de copertă) */}
+        <div className={`absolute bottom-12 md:bottom-15 left-0 w-full z-30 text-center px-4`}>
+           <h1 className="font-serif text-5xl md:text-8xl mb-4 tracking-[0.05em] drop-shadow-lg text-white">
             {project?.title}
           </h1>
-          <p className="font-sans text-gray-300 text-sm md:text-base uppercase tracking-[0.3em] font-medium drop-shadow-md">
+          <p className="font-sans text-gray-400 text-sm md:text-base uppercase tracking-[0.3em] font-medium drop-shadow-md">
             {project?.category}
           </p>
         </div>

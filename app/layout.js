@@ -1,6 +1,7 @@
 import './globals.css'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer' // <-- NOU: Import Footer
+import { Analytics } from '@vercel/analytics/next'
 import { Inter, Playfair_Display } from 'next/font/google'
 
 // Configurare fonturi... (Linii neschimbate)
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
         <Navbar />
         {children}
         <Footer /> {/* <-- NOU: Aici apare pe toate paginile */}
+        <Analytics />
       </body>
     </html>
   )

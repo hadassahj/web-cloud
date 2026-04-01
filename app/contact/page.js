@@ -17,8 +17,11 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
+    // Setăm statusul pe 'sending' ca să schimbăm textul de pe buton
+    setStatus('sending')
+    
     try {
-      // Adăugăm mesajul într-o colecție nouă numită "messages"
+      // 1. BACKUP: Salvarea în baza de date Firebase
       await addDoc(collection(db, 'messages'), {
         name: formData.name,
         email: formData.email,
@@ -26,11 +29,41 @@ export default function Contact() {
         createdAt: new Date()
       })
 
-      alert('Mesajul a fost trimis cu succes!')
-      setFormData({ name: '', email: '', message: '' }) // curățăm formularul
+      // 2. EMAIL: Trimiterea mesajului direct în Inbox-ul tău
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          // Tragem cheia automat din fișierul .env.local
+          access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY, 
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          subject: `Mesaj nou de la ${formData.name} (Finitiv Portfolio)`,
+          from_name: "Finitiv Website"
+        }),
+      });
+
+      const result = await response.json();
+
+      // Dacă email-ul a plecat cu succes
+      if (result.success) {
+        setStatus('success')
+        setFormData({ name: '', email: '', message: '' }) // Curățăm câmpurile
+        
+        // Ascundem mesajul verde după 5 secunde pentru un look curat
+        setTimeout(() => setStatus(null), 5000)
+      } else {
+        console.error("Web3Forms Error:", result.message);
+        setStatus('error')
+      }
+      
     } catch (error) {
       console.error('Eroare la trimiterea mesajului:', error)
-      alert('A apărut o eroare. Te rugăm să încerci din nou.')
+      setStatus('error')
     }
   }
 

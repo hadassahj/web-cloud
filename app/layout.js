@@ -23,7 +23,7 @@ export const metadata = {
     siteName: 'Finitiv Studio',
     images: [
       {
-        url: '/og-image.jpg', // <-- Poza din folderul "public"
+        url: 'https://finitiv.vercel.app/og-image.jpg', // <-- Poza din folderul "public"
         width: 1200,
         height: 630,
         alt: 'Finitiv Portfolio Cover',
@@ -37,7 +37,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Finitiv | Cinematic Visual Storytelling',
     description: 'Capturing moments that matter.',
-    images: ['/og-image.jpg'],
+    images: ['https://finitiv.vercel.app/og-image.jpg'],
   },
 }
 
